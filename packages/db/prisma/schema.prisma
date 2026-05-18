@@ -1,0 +1,143 @@
+// Prisma schema for AICallCenter2.
+// Region: ap-northeast-1 (Aurora PostgreSQL Serverless v2). All PII columns are
+// either encrypted at the column level via pgcrypto helpers in migrations, or
+// stored as references (S3 keys, external IDs) rather than raw values.
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pgcrypto]
+}
+
+enum TenantKind {
+  hospital
+  clinic
+  medicalcenter
+  pharmacy
+}
+
+enum CallStatusState {
+  new
+  in_progress
+  done
+  needs_human
+}
+
+enum CallOutcome {
+  answered
+  handed_off
+  abandoned
+}
+
+enum AppointmentSource {
+  ai_call
+  web
+  manual
+}
+
+enum AppointmentState {
+  pending
+  confirmed
+  cancelled
+  completed
+  no_show
+}
+
+enum SmsPurpose {
+  confirm
+  cancel
+  form
+}
+
+model Tenant {
+  id           String       @id @default(uuid()) @db.Uuid
+  slug         String       @unique
+  display_name String
+  kind         TenantKind
+  emr_adapter  String       @default("mock")
+  timezone     String       @default("Asia/Tokyo")
+  created_at   DateTime     @default(now())
+  calls        Call[]
+  appointments Appointment[]
+
+  @@index([kind])
+}
+
+model Call {
+  id                  String           @id @default(uuid()) @db.Uuid
+  tenant_id           String           @db.Uuid
+  tenant              Tenant           @relation(fields: [tenant_id], references: [id])
+  connect_contact_id  String           @unique
+  caller_phone_hash   String           // SHA-256(phone || tenant salt) — no raw PII
+  started_at          DateTime
+  ended_at            DateTime?
+  outcome             CallOutcome      @default(answered)
+  recording_s3_key    String?
+  transcript          Json?
+  extracted           Json?
+  sms_sent            Boolean          @default(false)
+  status              CallStatus?
+  appointments        Appointment[]
+  sms_tokens          SmsToken[]
+
+  @@index([tenant_id, started_at(sort: Desc)])
+}
+
+model CallStatus {
+  call_id     String          @id @db.Uuid
+  call        Call            @relation(fields: [call_id], references: [id], onDelete: Cascade)
+  state       CallStatusState @default(new)
+  assignee_id String?
+  updated_at  DateTime        @updatedAt
+}
+
+model Appointment {
+  id                  String            @id @default(uuid()) @db.Uuid
+  tenant_id           String            @db.Uuid
+  tenant              Tenant            @relation(fields: [tenant_id], references: [id])
+  patient_external_id String?           // EMR 側 ID。Mock の場合は null。
+  patient_kana_enc    Bytes             // pgp_sym_encrypt 済み
+  patient_dob_enc     Bytes
+  callback_phone_enc  Bytes
+  slot_at             DateTime
+  course              String
+  options             Json
+  source              AppointmentSource @default(ai_call)
+  state               AppointmentState  @default(pending)
+  call_id             String?           @db.Uuid
+  call                Call?             @relation(fields: [call_id], references: [id])
+  created_at          DateTime          @default(now())
+  updated_at          DateTime          @updatedAt
+
+  @@index([tenant_id, slot_at])
+  @@index([state])
+}
+
+model SmsToken {
+  token      String     @id
+  call_id    String     @db.Uuid
+  call       Call       @relation(fields: [call_id], references: [id], onDelete: Cascade)
+  purpose    SmsPurpose
+  payload    Json
+  expires_at DateTime
+  consumed_at DateTime?
+
+  @@index([expires_at])
+}
+
+model AuditLog {
+  id      String   @id @default(uuid()) @db.Uuid
+  actor   String
+  action  String
+  target  String
+  payload Json
+  at      DateTime @default(now())
+
+  @@index([at(sort: Desc)])
+  @@index([actor, at(sort: Desc)])
+}

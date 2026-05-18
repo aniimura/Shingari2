@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2022", "DOM"],
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "exactOptionalPropertyTypes": false,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {
+      "@aicc2/shared": ["packages/shared/src/index.ts"],
+      "@aicc2/shared/*": ["packages/shared/src/*"],
+      "@aicc2/db": ["packages/db/src/index.ts"],
+      "@aicc2/db/*": ["packages/db/src/*"],
+      "@aicc2/prompts": ["packages/prompts/src/index.ts"],
+      "@aicc2/prompts/*": ["packages/prompts/src/*"]
+    }
+  }
+}

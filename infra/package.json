@@ -1,0 +1,25 @@
+{
+  "name": "@aicc2/infra",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -b",
+    "synth": "cdk synth",
+    "deploy:dev": "cdk deploy --all --context env=dev --require-approval never",
+    "diff": "cdk diff --all",
+    "destroy:dev": "cdk destroy --all --context env=dev",
+    "lint": "eslint . --max-warnings 0",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "2.151.0",
+    "constructs": "10.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "20.14.10",
+    "aws-cdk": "2.151.0",
+    "ts-node": "10.9.2",
+    "typescript": "5.5.4"
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "Version": "2019-10-30",
+  "StartAction": "playRecordingNotice",
+  "Metadata": {
+    "Name": "aicc2-inbound-main",
+    "Description": "AI 受付メインフロー。録音告知 → メディアストリーム開始 → Bridge Lambda 起動 → 無音ループ。",
+    "Status": "PUBLISHED"
+  },
+  "Actions": [
+    {
+      "Identifier": "playRecordingNotice",
+      "Type": "MessageParticipant",
+      "Parameters": {
+        "Text": "本通話はサービス品質向上のため録音されます。録音をご希望されない場合は途中でお申し付けください。"
+      },
+      "Transitions": { "NextAction": "setAttributes" }
+    },
+    {
+      "Identifier": "setAttributes",
+      "Type": "UpdateContactAttributes",
+      "Parameters": {
+        "Attributes": {
+          "tenant_id": "$.Attributes.tenant_id",
+          "tenant_kind": "$.Attributes.tenant_kind"
+        }
+      },
+      "Transitions": { "NextAction": "startStreaming" }
+    },
+    {
+      "Identifier": "startStreaming",
+      "Type": "StartMediaStreaming",
+      "Parameters": {
+        "MediaStreamTypes": ["Audio"],
+        "Participants": ["Customer"]
+      },
+      "Transitions": { "NextAction": "invokeBridge", "Errors": [{ "ErrorType": "NoMatchingError", "NextAction": "handoffQueue" }] }
+    },
+    {
+      "Identifier": "invokeBridge",
+      "Type": "InvokeLambdaFunction",
+      "Parameters": {
+        "LambdaFunctionARN": "arn:aws:lambda:ap-northeast-1:000000000000:function:aicc2-dev-bridge-dispatch",
+        "TimeLimit": "8"
+      },
+      "Transitions": {
+        "NextAction": "silenceLoop",
+        "Errors": [{ "ErrorType": "NoMatchingError", "NextAction": "handoffQueue" }]
+      }
+    },
+    {
+      "Identifier": "silenceLoop",
+      "Type": "Loop",
+      "Parameters": { "LoopCount": "180" },
+      "Transitions": {
+        "NextAction": "stopStreaming",
+        "Conditions": [
+          {
+            "Condition": { "Operator": "Equals", "Operands": ["$.Attributes.bridge_state", "ended"] },
+            "NextAction": "stopStreaming"
+          },
+          {
+            "Condition": { "Operator": "Equals", "Operands": ["$.Attributes.bridge_state", "handoff"] },
+            "NextAction": "handoffQueue"
+          }
+        ],
+        "Loop": "silenceLoopBody"
+      }
+    },
+    {
+      "Identifier": "silenceLoopBody",
+      "Type": "Wait",
+      "Parameters": { "TimeLimitSeconds": "1" },
+      "Transitions": { "NextAction": "silenceLoop" }
+    },
+    {
+      "Identifier": "stopStreaming",
+      "Type": "StopMediaStreaming",
+      "Parameters": {},
+      "Transitions": { "NextAction": "disconnect" }
+    },
+    {
+      "Identifier": "handoffQueue",
+      "Type": "TransferToQueue",
+      "Parameters": { "QueueId": "$.Attributes.handoff_queue_arn" },
+      "Transitions": { "NextAction": "disconnect" }
+    },
+    {
+      "Identifier": "disconnect",
+      "Type": "DisconnectParticipant",
+      "Parameters": {}
+    }
+  ]
+}
