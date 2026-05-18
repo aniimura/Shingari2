@@ -1,0 +1,24 @@
+{
+  "name": "aicallcenter2",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@9.7.0",
+  "engines": {
+    "node": ">=20.11"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:e2e": "turbo run test:e2e",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md,yaml,yml}\""
+  },
+  "devDependencies": {
+    "@types/node": "20.14.10",
+    "prettier": "3.3.3",
+    "turbo": "2.0.9",
+    "typescript": "5.5.4"
+  }
+}

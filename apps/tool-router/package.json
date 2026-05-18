@@ -1,0 +1,26 @@
+{
+  "name": "@aicc2/tool-router",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -b",
+    "lint": "eslint src --max-warnings 0",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@aicc2/db": "workspace:*",
+    "@aicc2/shared": "workspace:*",
+    "@aws-sdk/client-pinpoint-sms-voice-v2": "3.624.0",
+    "@aws-sdk/client-secrets-manager": "3.624.0",
+    "nanoid": "5.0.7",
+    "zod": "3.23.8"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "8.10.143",
+    "typescript": "5.5.4",
+    "vitest": "1.6.0"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "@aicc2/telephony-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -b",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "lint": "eslint src --max-warnings 0",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "vitest run --config vitest.e2e.config.ts"
+  },
+  "dependencies": {
+    "@aicc2/db": "workspace:*",
+    "@aicc2/prompts": "workspace:*",
+    "@aicc2/shared": "workspace:*",
+    "@aws-sdk/client-kinesis-video": "3.624.0",
+    "@aws-sdk/client-kinesis-video-media": "3.624.0",
+    "@aws-sdk/client-s3": "3.624.0",
+    "@aws-sdk/client-secrets-manager": "3.624.0",
+    "ebml": "3.0.0",
+    "fastify": "4.28.1",
+    "pino": "9.3.2",
+    "undici": "6.19.7",
+    "ws": "8.18.0",
+    "zod": "3.23.8"
+  },
+  "devDependencies": {
+    "@types/ws": "8.5.12",
+    "tsx": "4.16.5",
+    "typescript": "5.5.4",
+    "vitest": "1.6.0"
+  }
+}
