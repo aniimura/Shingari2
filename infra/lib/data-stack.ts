@@ -34,7 +34,7 @@ export class DataStack extends Stack {
 
     this.cluster = new DatabaseCluster(this, 'Aurora', {
       engine: DatabaseClusterEngine.auroraPostgres({
-        version: AuroraPostgresEngineVersion.VER_16_3,
+        version: AuroraPostgresEngineVersion.VER_16_2,
       }),
       vpc: props.vpc,
       vpcSubnets: { subnetType: SubnetType.PRIVATE_ISOLATED },

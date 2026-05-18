@@ -38,6 +38,10 @@ out/
 !*.tfvars.example
 crash.log
 
+# CDK
+cdk.out/
+.cdk.staging/
+
 # OS / IDE
 .DS_Store
 Thumbs.db

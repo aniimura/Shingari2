@@ -15,15 +15,6 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".",
-    "paths": {
-      "@aicc2/shared": ["packages/shared/src/index.ts"],
-      "@aicc2/shared/*": ["packages/shared/src/*"],
-      "@aicc2/db": ["packages/db/src/index.ts"],
-      "@aicc2/db/*": ["packages/db/src/*"],
-      "@aicc2/prompts": ["packages/prompts/src/index.ts"],
-      "@aicc2/prompts/*": ["packages/prompts/src/*"]
-    }
+    "forceConsistentCasingInFileNames": true
   }
 }
