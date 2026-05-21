@@ -29,6 +29,17 @@ out/
 !.env.example
 *.pem
 *.key
+*.p12
+*.pfx
+*.token
+secrets/
+# Common ad-hoc secret-bearing filenames -- DO NOT commit
+[Oo]pen[Aa][Ii]_[Aa][Pp][Ii]*
+*api*key*.txt
+*api*key*.json
+*credentials*.json
+!*credentials.example.json
+aws_credentials*
 
 # Terraform
 .terraform/
